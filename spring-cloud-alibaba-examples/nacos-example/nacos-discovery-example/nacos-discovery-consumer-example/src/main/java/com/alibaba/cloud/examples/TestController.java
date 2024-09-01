@@ -19,13 +19,18 @@ package com.alibaba.cloud.examples;
 
 import com.alibaba.cloud.examples.feign.EchoClient;
 
+import com.alibaba.cloud.nacos.metrics.aop.interceptor.ReactiveInterceptor;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 
 /**
@@ -35,6 +40,21 @@ import org.springframework.web.client.RestTemplate;
  */
 @RestController
 public class TestController {
+	@Autowired
+	private WebClient.Builder clientBuilder;
+
+	@GetMapping("/sayHello")
+	public Mono<String> sayHello(){
+		System.out.println("yifangwen");
+		return clientBuilder
+				.baseUrl("http://127.0.0.1:63275/sayHello")
+//				.filter(reactiveInterceptor)
+				.build()
+				.get()//post请求
+				.retrieve()//请求结果的方法
+				.bodyToMono(String.class);//将结果转换为相应的类型，这是String，直接返回即可
+
+	}
 
 	@Autowired
 	private RestTemplate urlCleanedRestTemplate;
