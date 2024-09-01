@@ -22,6 +22,9 @@ import com.alibaba.cloud.nacos.metrics.aop.RestBeanPostProcessor;
 import com.alibaba.cloud.nacos.metrics.aop.interceptor.OpenFeignInterceptor;
 import com.alibaba.cloud.nacos.metrics.aop.interceptor.ReactiveInterceptor;
 import com.alibaba.cloud.nacos.metrics.aop.interceptor.RestTemplateInterceptor;
+import io.micrometer.prometheus.PrometheusMeterRegistry;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -78,6 +81,11 @@ public class NacosMetricsAutoConfiguration {
             return new OpenFeignInterceptor();
         }
 
+    }
+
+    @Bean
+    InitializingBean forcePrometheusPostProcessor(BeanPostProcessor meterRegistryPostProcessor, PrometheusMeterRegistry registry) {
+        return () -> meterRegistryPostProcessor.postProcessAfterInitialization(registry, "");
     }
 
 }

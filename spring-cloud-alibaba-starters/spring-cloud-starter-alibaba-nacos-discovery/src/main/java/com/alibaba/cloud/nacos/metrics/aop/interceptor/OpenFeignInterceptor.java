@@ -33,7 +33,7 @@ public class OpenFeignInterceptor implements ResponseInterceptor, RequestInterce
 
         Response response = invocationContext.response();
 
-        Counter qpsCounter = Counter.builder("spring-cloud.rpc.openfeign.qps.response")
+        Counter qpsCounter = Counter.builder("spring-cloud.rpc.openfeign.qps")
                 .description("Spring Cloud Alibaba QPS metrics when use OpenFeign RPC Call.")
                 .baseUnit(TimeUnit.SECONDS.name())
                 .tag("sca.openfeign.rpc", "url: " + request.url()
