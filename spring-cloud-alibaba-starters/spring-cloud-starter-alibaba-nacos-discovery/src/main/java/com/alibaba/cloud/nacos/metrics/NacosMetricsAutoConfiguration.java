@@ -17,22 +17,15 @@
 package com.alibaba.cloud.nacos.metrics;
 
 import com.alibaba.cloud.nacos.ConditionalOnNacosDiscoveryEnabled;
-import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
 import com.alibaba.cloud.nacos.metrics.aop.ReactiveBeanPostProcessor;
 import com.alibaba.cloud.nacos.metrics.aop.RestBeanPostProcessor;
 import com.alibaba.cloud.nacos.metrics.aop.interceptor.OpenFeignInterceptor;
 import com.alibaba.cloud.nacos.metrics.aop.interceptor.ReactiveInterceptor;
 import com.alibaba.cloud.nacos.metrics.aop.interceptor.RestTemplateInterceptor;
-import com.alibaba.cloud.nacos.metrics.registry.RpcPrometheusConfig;
-import com.alibaba.cloud.nacos.metrics.registry.RpcRegistryConfig;
-import com.alibaba.cloud.nacos.metrics.registry.RpcStepMeterRegistry;
-import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
@@ -42,30 +35,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 @ConditionalOnDiscoveryEnabled
 @ConditionalOnNacosDiscoveryEnabled
 public class NacosMetricsAutoConfiguration {
-
-    static {
-        System.out.println("NMAC chufale");
-    }
-    @Bean
-    public RpcRegistryConfig rpcRegistryConfig() {
-
-        return RpcRegistryConfig.DEFAULT;
-    }
-
-    @Bean
-    public RpcStepMeterRegistry rpcStepMeterRegistry(RpcRegistryConfig registry, Clock clock) {
-        return new RpcStepMeterRegistry(registry, clock);
-    }
-
-    @Bean
-    public RpcPrometheusConfig rpcPrometheusConfig() {
-        return RpcPrometheusConfig.DEFAULT;
-    }
-//
-//    @Bean
-//    public RpcPrometheusMeterRegistry rpcPrometheusMeterRegistry(RpcPrometheusConfig prometheusConfig) {
-//        return new RpcPrometheusMeterRegistry(prometheusConfig);
-//    }
 
     @ConditionalOnClass(WebClient.class)
     @ConditionalOnBean(WebClient.Builder.class)
@@ -90,13 +59,11 @@ public class NacosMetricsAutoConfiguration {
         @Bean
         @ConditionalOnMissingBean
         public RestTemplateInterceptor restTemplateInterceptor() {
-            System.out.println("restautoconfig chufa");
             return new RestTemplateInterceptor();
         }
 
         @Bean
         public RestBeanPostProcessor restBeanPostProcessor() {
-
             return new RestBeanPostProcessor();
         }
     }
@@ -108,7 +75,6 @@ public class NacosMetricsAutoConfiguration {
         @Bean
         @ConditionalOnMissingBean
         public OpenFeignInterceptor openFeignInterceptor() {
-
             return new OpenFeignInterceptor();
         }
 

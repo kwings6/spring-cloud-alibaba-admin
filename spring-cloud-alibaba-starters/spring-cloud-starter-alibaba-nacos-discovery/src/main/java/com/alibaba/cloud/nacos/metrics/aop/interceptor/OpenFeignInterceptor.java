@@ -16,34 +16,33 @@
  */
 package com.alibaba.cloud.nacos.metrics.aop.interceptor;
 
-import com.alibaba.cloud.nacos.metrics.registry.RpcStepMeterRegistry;
 import feign.*;
 import io.micrometer.core.instrument.Counter;
+import io.micrometer.prometheus.PrometheusMeterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.concurrent.TimeUnit;
 
 public class OpenFeignInterceptor implements ResponseInterceptor, RequestInterceptor {
-    @Autowired
-    private RpcStepMeterRegistry rpcStepMeterRegistry;
 
+    @Autowired
+    private PrometheusMeterRegistry prometheusMeterRegistry;
     RequestTemplate request;
     @Override
     public Object intercept(InvocationContext invocationContext, Chain chain) throws Exception {
 
         Response response = invocationContext.response();
 
-        Counter qpsCounterRes = Counter.builder("spring-cloud.rpc.openfeign.qps.response")
+        Counter qpsCounter = Counter.builder("spring-cloud.rpc.openfeign.qps.response")
                 .description("Spring Cloud Alibaba QPS metrics when use OpenFeign RPC Call.")
                 .baseUnit(TimeUnit.SECONDS.name())
-                .tag("sca.openfeign.rpc.method", request.method().toString())
-                .tag("sca.openfeign.rpc.url", request.url())
-//                .tag("sca.openfeign.rpc.body", request.bodyTemplate())
-                .tag("sca.openfeign.status", response.status() + "")
-                .register(rpcStepMeterRegistry);
+                .tag("sca.openfeign.rpc", "url: " + request.url()
+                        + "  method: " + request.method()
+                        + "  status: " + response.status())
+                .register(prometheusMeterRegistry);
 
-        qpsCounterRes.increment();
+        qpsCounter.increment();
+
         return null;
     }
 
